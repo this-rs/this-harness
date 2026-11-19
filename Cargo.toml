@@ -1,0 +1,10 @@
+[workspace]
+resolver = "2"
+members = [
+  "crates/this-agent",
+  "crates/this-llm",
+  "crates/this-llm-providers",
+  "crates/this-harness",
+  "crates/this-module-lang",
+  "crates/this-module-harness",
+]

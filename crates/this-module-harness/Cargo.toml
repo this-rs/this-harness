@@ -1,0 +1,38 @@
+[package]
+name = "this-module-harness"
+version = "0.0.1"
+edition = "2024"
+authors = ["Riviere Théotime <t@ffs.holdings>"]
+license = "MIT OR Apache-2.0"
+description = "Compile a this-rs module from source, store it in a Vfs with the shared layout, and read it back. Pure: no DOM, no tokio, wasm32-safe."
+repository = "https://github.com/this-rs/this"
+keywords = ["framework", "module", "harness", "wasm"]
+categories = ["wasm", "development-tools"]
+
+[dependencies]
+this-module-lang = { version = "0.0.1", path = "../this-module-lang", features = ["assemble"] }
+this-vfs = { version = "0.0.1", path = "../../../this/crates/this-vfs" }
+# Le contrat de complétion appartient au provider, pas au consommateur.
+this-llm = { version = "0.0.1", path = "../this-llm" }
+# Le framework sait valider un descripteur : c'est ce qui permet de refuser un
+# module drafté qui ne chargerait pas.
+this-descriptor = { version = "0.0.1", path = "../../../this/crates/this-descriptor", default-features = false }
+chrono = { version = "0.4", features = ["wasmbind"] }
+serde_json = "1.0"
+thiserror = "2.0"
+async-trait = "0.1"
+# Le moteur d'exécution côté hôte, optionnel : une page utilise `WebAssembly`
+# et n'embarque donc pas wasmi.
+wasmi = { version = "2.0.0", optional = true }
+
+[dev-dependencies]
+# Les implémentations de `Vfs` et de l'assembleur sont asynchrones ; les tests les
+# attendent. Rien de tout cela n'entre dans le crate compilé.
+tokio = { version = "1", features = ["rt", "macros"] }
+# Assemble de vrais modules wasm pour tester le primitif d'appel borné.
+wat = "1.263.0"
+
+[features]
+default = []
+# Exécuteur `wasmi`, pour l'hôte.
+wasmi = ["dep:wasmi"]
